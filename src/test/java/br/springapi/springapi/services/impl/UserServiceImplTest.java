@@ -13,6 +13,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
 
@@ -26,6 +27,8 @@ class UserServiceImplTest {
     public static final String NAME = "Joao";
     public static final String EMAIL = "joao@email.com";
     public static final String PASSWORD = "1234";
+    public static final String OBJETO_NAO_ENCONTRADO = "Objeto nao encontrado";
+    public static final int INDEX = 0;
     @InjectMocks
     private UserServiceImpl service;
 
@@ -61,18 +64,36 @@ class UserServiceImplTest {
         assertEquals(EMAIL, response.getEmail());
 
     }
-    @Test
+    @Test // GetId
     void whenFindByIdThenReturnAnObjectNotFoundException() {
-        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException("Objeto não encontrado"));
+        when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
         try {
             service.findById(ID);
         }catch (Exception ex){
             assertEquals(ObjectNotFoundException.class, ex.getClass());
-            assertEquals("Objeto não encontrado", ex.getMessage());  //teste assegura que ambos são iguais
+            assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());  //teste assegura que ambos são iguais
         }
     }
-    @Test
-    void findAll() {
+
+    @Test //GetAll
+    void whenFindAllThenReturnAnListOfUsers() {
+        when(repository.findAll()).thenReturn(List.of(user));//retorna lista com um usuario dentro
+
+        List<User> response = service.findAll();
+
+      /*Bloco assegura que o objeto não é nulo, que o tamanho da
+      lista é um, e que o objeto que vai vir dentro desta lista seja da classe
+      tipo User
+       */
+        assertNotNull(response);
+        assertEquals(1, response.size());
+        assertEquals(User.class, response.get(INDEX).getClass());
+
+
+        assertEquals(ID, response.get(INDEX).getId());
+        assertEquals(NAME, response.get(INDEX).getName());
+        assertEquals(EMAIL, response.get(INDEX).getEmail());
+        assertEquals(PASSWORD, response.get(INDEX).getPassword());
     }
 
     @Test
