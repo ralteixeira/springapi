@@ -1,6 +1,7 @@
 package br.springapi.springapi.resources.exceptions;
 
 
+import br.springapi.springapi.services.exceptions.DataIntegratyViolationException;
 import br.springapi.springapi.services.exceptions.ObjectNotFoundException;
 import com.sun.net.httpserver.HttpServer;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,13 @@ public class ResourceExceptionHandler {
 
         StandartError error = new StandartError(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(), ex.getMessage(), request.getRequestURI());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+
+    }
+    @ExceptionHandler(DataIntegratyViolationException.class)
+    public ResponseEntity<StandartError>dataIntegratyViolationException(DataIntegratyViolationException ex, HttpServletRequest request){
+
+        StandartError error = new StandartError(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(), ex.getMessage(), request.getRequestURI());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
 
     }
 }
