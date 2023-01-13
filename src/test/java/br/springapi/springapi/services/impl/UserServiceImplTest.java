@@ -3,7 +3,9 @@ package br.springapi.springapi.services.impl;
 import br.springapi.springapi.domain.User;
 import br.springapi.springapi.domain.dto.UserDTO;
 import br.springapi.springapi.repositories.UserRepository;
+import br.springapi.springapi.services.exceptions.DataIntegratyViolationException;
 import br.springapi.springapi.services.exceptions.ObjectNotFoundException;
+import lombok.Data;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 class UserServiceImplTest {
@@ -98,7 +99,7 @@ class UserServiceImplTest {
         assertEquals(PASSWORD, response.get(INDEX).getPassword());
     }
 
-    @Test
+    @Test//Create
     void whenCreateThenReturnSuccess() {
         when(repository.save(any())).thenReturn(user);
 
@@ -112,6 +113,20 @@ class UserServiceImplTest {
         assertEquals(PASSWORD, response.getPassword());
 
     }
+    @Test
+    void whenCreateThenReturnAnDataIntegrityViolationException() {
+        when(repository.findByEmail(anyString())).thenReturn(optionalUser);
+
+        try{
+            optionalUser.get().setId(2); //valida a excessão ID diferente
+            service.create(userDTO);
+        }catch (Exception ex){
+            assertEquals(DataIntegratyViolationException.class, ex.getClass());
+            assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
+        }
+
+    }
+
 
     @Test
     void update() {
