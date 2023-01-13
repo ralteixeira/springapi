@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
 
 import java.awt.*;
 import java.util.List;
@@ -67,18 +68,21 @@ class UserServiceImplTest {
         assertEquals(EMAIL, response.getEmail());
 
     }
-    @Test // GetId
+
+    @Test
+        // GetId
     void whenFindByIdThenReturnAnObjectNotFoundException() {
         when(repository.findById(anyInt())).thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
         try {
             service.findById(ID);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             assertEquals(ObjectNotFoundException.class, ex.getClass());
             assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());  //teste assegura que ambos são iguais
         }
     }
 
-    @Test //GetAll
+    @Test
+        //GetAll
     void whenFindAllThenReturnAnListOfUsers() {
         when(repository.findAll()).thenReturn(List.of(user));//retorna lista com um usuario dentro
 
@@ -99,7 +103,8 @@ class UserServiceImplTest {
         assertEquals(PASSWORD, response.get(INDEX).getPassword());
     }
 
-    @Test//Create
+    @Test
+//Create
     void whenCreateThenReturnSuccess() {
         when(repository.save(any())).thenReturn(user);
 
@@ -113,14 +118,15 @@ class UserServiceImplTest {
         assertEquals(PASSWORD, response.getPassword());
 
     }
+
     @Test
     void whenCreateThenReturnAnDataIntegrityViolationException() {
         when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
-        try{
+        try {
             optionalUser.get().setId(2); //valida a excessão ID diferente
             service.create(userDTO);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             assertEquals(DataIntegratyViolationException.class, ex.getClass());
             assertEquals("E-mail já cadastrado no sistema", ex.getMessage());
         }
@@ -128,8 +134,8 @@ class UserServiceImplTest {
     }
 
 
-
-    @Test//UpDate
+    @Test
+//UpDate
     void whenUpDateThenReturnSuccess() {
         when(repository.save(any())).thenReturn(user);
 
@@ -143,7 +149,9 @@ class UserServiceImplTest {
         assertEquals(PASSWORD, response.getPassword());
 
     }
-    @Test //Excessao Create
+
+    @Test
+        //Excessao Create
     void whenUpDateThenReturnAnDataIntegrityViolationException() {
         when(repository.findByEmail(anyString())).thenReturn(optionalUser);
 
@@ -164,8 +172,20 @@ class UserServiceImplTest {
         verify(repository, times(1)).deleteById(anyInt());
     }
 
-    private void startUser(){
-        user = new User(ID, NAME, EMAIL, PASSWORD);
+    @Test
+    void whenDeleteThenReturnObjectNotFoundException() {
+        when(repository.findById(anyInt()))
+                .thenThrow(new ObjectNotFoundException(OBJETO_NAO_ENCONTRADO));
+        try {
+            service.delete(ID);
+        } catch (Exception ex) {
+            assertEquals(ObjectNotFoundException.class, ex.getClass());
+            assertEquals(OBJETO_NAO_ENCONTRADO, ex.getMessage());
+        }
+    }
+
+    private void startUser() {
+        user = new User(ID, NAME, EMAIL,  PASSWORD);
         userDTO = new UserDTO(ID, NAME, EMAIL, PASSWORD);
         optionalUser = Optional.of(new User(ID, NAME, EMAIL, PASSWORD));
     }
