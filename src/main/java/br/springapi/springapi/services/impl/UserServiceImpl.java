@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(UserDTO obj) {
-        findByEmail(obj);
+        findByEmail(obj);//excessao para email ja cadastrado
         return repository.save(mapper.map(obj, User.class));
     }
 
