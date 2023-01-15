@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 
 @Getter
-@Setter
 @AllArgsConstructor
 public class StandartError {
 
