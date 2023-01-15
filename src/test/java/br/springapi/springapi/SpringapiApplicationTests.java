@@ -8,6 +8,14 @@ class SpringapiApplicationTests {
 
     @Test
     void contextLoads() {
+
+    }
+    @Test
+    void main() {
+        SpringapiApplication.main(new String[]{});
+
     }
 
 }
+
+
